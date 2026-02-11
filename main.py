@@ -13,4 +13,4 @@ def get_vehicle_position(line):
     return response
     
 
-print(json.dumps(get_vehicle_position(4)))
+print(json.loads(get_vehicle_position(4)))
