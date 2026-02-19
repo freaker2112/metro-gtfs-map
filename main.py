@@ -10,6 +10,7 @@ ovapi = overpy.Overpass()
 local_lines = {2,3,4,5,7,9,10,11,14,17,18,22,25,27,30,32,33,36,38,46,54,61,62,63,64,65,67,68,71,72,74,75,80,83,87}
 #local_lines = {2,3,4}
 UofM_lines = {120,121,122,123,124,125}
+express_lines = {94,113,114,134,156}
 lrt_lines = {901,902}
 brt_lines = {903,904,905}
 abrt_lines = {921,922,923,924,925}
@@ -123,6 +124,18 @@ def addtomap_BRT(line):
             fill_color=linecolor
         ).add_to(m)
 
+def addtomap_exprs(line):
+    line_locations = {row['trip_id']: (row['latitude'], row['longitude']) for row in get_vehicle_position(line)}
+    for trip_id, coords in line_locations.items():
+        folium.CircleMarker(
+            location=coords,
+            radius=5,
+            popup=f"{line} {trip_id}",
+            color='pink',
+            fill=True,
+            fill_color='pink',
+        ).add_to(m)
+
 
 for linenum in local_lines:
     addtomap_bus(linenum)
@@ -132,26 +145,24 @@ for linenum in UofM_lines:
     addtomap_umnbus(linenum)
 for linenum in brt_lines:
     addtomap_BRT(linenum)
+for linenum in express_lines:
+    addtomap_exprs(linenum)
 
 
-file_path = 'mspgeom.oapi'
-file_path_lrt_blue = 'blueline.oapi'
-file_path_lrt_green = 'greenline.oapi'
-file_path_brt_orange = 'orangeline.oapi'
-file_path_abrt = 'abrt.oapi'
-file_path_brt_gold = 'goldline.oapi'
-with open(file_path, 'r', encoding='utf-8') as f:
+with open('route_data/mspgeom.oapi', 'r', encoding='utf-8') as f:
     overpass_data = json.load(f)
-with open(file_path_lrt_blue, 'r', encoding='utf-8') as f:
+with open('route_data/blueline.oapi', 'r', encoding='utf-8') as f:
     overpass_data_lrt_blue = json.load(f)
-with open(file_path_lrt_green, 'r', encoding='utf-8') as f:
+with open('route_data/greenline.oapi', 'r', encoding='utf-8') as f:
     overpass_data_lrt_green = json.load(f)
-with open(file_path_brt_orange, 'r', encoding='utf-8') as f:
+with open('route_data/orangeline.oapi', 'r', encoding='utf-8') as f:
     overpass_data_brt_orange = json.load(f)
-with open(file_path_abrt, 'r', encoding='utf-8') as f:
+with open('route_data/abrt.oapi', 'r', encoding='utf-8') as f:
     overpass_data_abrt = json.load(f)
-with open(file_path_brt_gold, 'r', encoding='utf-8') as f:
+with open('route_data/goldline.oapi', 'r', encoding='utf-8') as f:
     overpass_data_brt_gold = json.load(f)
+with open('route_data/express.oapi', 'r', encoding='utf-8') as f:
+    overpass_data_exprs = json.load(f)
 
 geo_data = osm2geojson.json2geojson(overpass_data)
 geo_data_lrt_blue = osm2geojson.json2geojson(overpass_data_lrt_blue)
@@ -159,6 +170,7 @@ geo_data_lrt_green = osm2geojson.json2geojson(overpass_data_lrt_green)
 geo_data_brt_orange = osm2geojson.json2geojson(overpass_data_brt_orange)
 geo_data_abrt = osm2geojson.json2geojson(overpass_data_abrt)
 geo_data_brt_gold = osm2geojson.json2geojson(overpass_data_brt_gold)
+geo_data_exprs = osm2geojson.json2geojson(overpass_data_exprs)
 
 folium.GeoJson(
     geo_data,
@@ -194,6 +206,13 @@ folium.GeoJson(
     geo_data_brt_gold,
     name='Gold Line Route',
     color='yellow'
+).add_to(m)
+
+folium.GeoJson(
+    geo_data_exprs,
+    name='Express Routes',
+    color='pink',
+    opacity=0.5
 ).add_to(m)
 
 folium.LayerControl().add_to(m)

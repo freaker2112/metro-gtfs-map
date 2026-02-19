@@ -17,24 +17,21 @@ abrt_lines = {921,922,923,924,925}
 
 m = folium.Map(location=[44.9757, -93.2694], zoom_start=13)
 
-file_path = 'mspgeom.oapi'
-file_path_lrt_blue = 'blueline.oapi'
-file_path_lrt_green = 'greenline.oapi'
-file_path_brt_orange = 'orangeline.oapi'
-file_path_abrt = 'abrt.oapi'
-file_path_brt_gold = 'goldline.oapi'
-with open(file_path, 'r', encoding='utf-8') as f:
+
+with open('route_data/mspgeom.oapi', 'r', encoding='utf-8') as f:
     overpass_data = json.load(f)
-with open(file_path_lrt_blue, 'r', encoding='utf-8') as f:
+with open('route_data/blueline.oapi', 'r', encoding='utf-8') as f:
     overpass_data_lrt_blue = json.load(f)
-with open(file_path_lrt_green, 'r', encoding='utf-8') as f:
+with open('route_data/greenline.oapi', 'r', encoding='utf-8') as f:
     overpass_data_lrt_green = json.load(f)
-with open(file_path_brt_orange, 'r', encoding='utf-8') as f:
+with open('route_data/orangeline.oapi', 'r', encoding='utf-8') as f:
     overpass_data_brt_orange = json.load(f)
-with open(file_path_abrt, 'r', encoding='utf-8') as f:
+with open('route_data/abrt.oapi', 'r', encoding='utf-8') as f:
     overpass_data_abrt = json.load(f)
-with open(file_path_brt_gold, 'r', encoding='utf-8') as f:
+with open('route_data/goldline.oapi', 'r', encoding='utf-8') as f:
     overpass_data_brt_gold = json.load(f)
+with open('route_data/express.oapi', 'r', encoding='utf-8') as f:
+    overpass_data_exprs = json.load(f)
 
 geo_data = osm2geojson.json2geojson(overpass_data)
 geo_data_lrt_blue = osm2geojson.json2geojson(overpass_data_lrt_blue)
@@ -42,6 +39,7 @@ geo_data_lrt_green = osm2geojson.json2geojson(overpass_data_lrt_green)
 geo_data_brt_orange = osm2geojson.json2geojson(overpass_data_brt_orange)
 geo_data_abrt = osm2geojson.json2geojson(overpass_data_abrt)
 geo_data_brt_gold = osm2geojson.json2geojson(overpass_data_brt_gold)
+geo_data_exprs = osm2geojson.json2geojson(overpass_data_exprs)
 
 folium.GeoJson(
     geo_data,
@@ -77,6 +75,13 @@ folium.GeoJson(
     geo_data_brt_gold,
     name='Routes',
     color='yellow'
+).add_to(m)
+
+folium.GeoJson(
+    geo_data_exprs,
+    name='Routes',
+    color='pink',
+    opacity=0.5
 ).add_to(m)
 
 folium.LayerControl().add_to(m)
