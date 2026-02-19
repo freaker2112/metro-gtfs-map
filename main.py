@@ -1,7 +1,11 @@
 import requests
 import json
 import folium
+import overpy
+import osmnx
+import osm2geojson
 
+ovapi = overpy.Overpass()
 
 local_lines = {2,3,4,5,7,9,10,11,14,17,18,22,25,27,30,32,33,36,38,46,54,61,62,63,64,65,67,68,71,72,74,75,80,83,87}
 #local_lines = {2,3,4}
@@ -26,6 +30,7 @@ for routenum in local_lines:
 
 green_lrt_locations = {row['trip_id']: (row['latitude'], row['longitude']) for row in get_vehicle_position(902)}
 blue_lrt_locations = {row['trip_id']: (row['latitude'], row['longitude']) for row in get_vehicle_position(901)}
+
 
 
 m = folium.Map(location=[44.9757, -93.2694], zoom_start=13)
@@ -127,5 +132,71 @@ for linenum in UofM_lines:
     addtomap_umnbus(linenum)
 for linenum in brt_lines:
     addtomap_BRT(linenum)
+
+
+file_path = 'mspgeom.oapi'
+file_path_lrt_blue = 'blueline.oapi'
+file_path_lrt_green = 'greenline.oapi'
+file_path_brt_orange = 'orangeline.oapi'
+file_path_abrt = 'abrt.oapi'
+file_path_brt_gold = 'goldline.oapi'
+with open(file_path, 'r', encoding='utf-8') as f:
+    overpass_data = json.load(f)
+with open(file_path_lrt_blue, 'r', encoding='utf-8') as f:
+    overpass_data_lrt_blue = json.load(f)
+with open(file_path_lrt_green, 'r', encoding='utf-8') as f:
+    overpass_data_lrt_green = json.load(f)
+with open(file_path_brt_orange, 'r', encoding='utf-8') as f:
+    overpass_data_brt_orange = json.load(f)
+with open(file_path_abrt, 'r', encoding='utf-8') as f:
+    overpass_data_abrt = json.load(f)
+with open(file_path_brt_gold, 'r', encoding='utf-8') as f:
+    overpass_data_brt_gold = json.load(f)
+
+geo_data = osm2geojson.json2geojson(overpass_data)
+geo_data_lrt_blue = osm2geojson.json2geojson(overpass_data_lrt_blue)
+geo_data_lrt_green = osm2geojson.json2geojson(overpass_data_lrt_green)
+geo_data_brt_orange = osm2geojson.json2geojson(overpass_data_brt_orange)
+geo_data_abrt = osm2geojson.json2geojson(overpass_data_abrt)
+geo_data_brt_gold = osm2geojson.json2geojson(overpass_data_brt_gold)
+
+folium.GeoJson(
+    geo_data,
+    name='Local Bus Routes',
+    color='purple'
+).add_to(m)
+
+folium.GeoJson(
+    geo_data_lrt_blue,
+    name='Blue Line Route',
+    color='blue'
+).add_to(m)
+
+folium.GeoJson(
+    geo_data_lrt_green,
+    name='Green Line Route',
+    color='green'
+).add_to(m)
+
+folium.GeoJson(
+    geo_data_brt_orange,
+    name='Orange Line Route',
+    color='orange'
+).add_to(m)
+
+folium.GeoJson(
+    geo_data_abrt,
+    name='aBRT Routes',
+    color='gray'
+).add_to(m)
+
+folium.GeoJson(
+    geo_data_brt_gold,
+    name='Gold Line Route',
+    color='yellow'
+).add_to(m)
+
+folium.LayerControl().add_to(m)
+
 
 m.save("vehicle_map.html")
