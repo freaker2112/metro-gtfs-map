@@ -9,7 +9,7 @@ ovapi = overpy.Overpass()
 
 local_lines = {2,3,4,5,7,9,10,11,14,17,18,22,25,27,30,32,33,36,38,46,54,61,62,63,64,65,67,68,71,72,74,75,80,83,87}
 #local_lines = {2,3,4}
-UofM_lines = {120,121,122,123,124,125}
+#UofM_lines = {120,121,122,123,124,125}
 express_lines = {94,113,114,134,156}
 lrt_lines = {901,902}
 brt_lines = {903,904,905}
@@ -141,8 +141,8 @@ for linenum in local_lines:
     addtomap_bus(linenum)
 for linenum in abrt_lines:
     addtomap_aBRT(linenum)
-for linenum in UofM_lines:
-    addtomap_umnbus(linenum)
+#for linenum in UofM_lines:
+#    addtomap_umnbus(linenum)
 for linenum in brt_lines:
     addtomap_BRT(linenum)
 for linenum in express_lines:
@@ -212,7 +212,7 @@ folium.GeoJson(
     geo_data_exprs,
     name='Express Routes',
     color='pink',
-    opacity=0.5
+    opacity=0.8
 ).add_to(m)
 
 folium.LayerControl().add_to(m)
